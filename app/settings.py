@@ -10,6 +10,9 @@ DEFAULTS = {
     "audio_quality": "320 kbps",
     "video_quality": "Best",
     "language": "Auto",
+    "subtitles": False,
+    "sub_target": "Original (no translation)",
+    "sub_video": "SRT file only",
 }
 
 

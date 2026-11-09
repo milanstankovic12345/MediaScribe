@@ -5,3 +5,4 @@ fpdf2>=2.7
 # Optional: CUDA libraries for GPU transcription (large downloads, NVIDIA GPU only)
 nvidia-cublas-cu12; sys_platform == "win32"
 nvidia-cudnn-cu12; sys_platform == "win32"
+sentencepiece
