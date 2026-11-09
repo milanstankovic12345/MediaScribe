@@ -1,7 +1,7 @@
 ---
 id: TASK-007
 title: Document subtitles feature in docs and CLAUDE.md
-status: ready
+status: done
 agent: docs-writer
 skills: []
 model_tier: fast

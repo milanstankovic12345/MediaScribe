@@ -28,3 +28,6 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-09 TASK-010 → implementer (sonnet) base=eab24b9
 - 2026-11-09 TASK-010 handoff OK → code review r1 (opus)
 - 2026-11-09 TASK-010 done (gate PASS r1; open notes: CR-1 low unused src_dir fixture, CR-2/CR-3 info; tests/ gitignored needs human)
+- 2026-11-09 TASK-007 → docs-writer (haiku) base=a5d18be
+- 2026-11-09 TASK-007 handoff saved by orchestrator on user instruction (agent blocked by shell guard) → code review r1
+- 2026-11-09 TASK-007 done (gate PASS r1; open notes: CR-1 low translation limited to 13 source languages undocumented, CR-2..4 info; docs/, tests/, CLAUDE.md gitignored needs human)

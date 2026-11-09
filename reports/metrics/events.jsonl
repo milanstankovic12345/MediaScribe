@@ -90,3 +90,16 @@
 {"ts":"2026-11-09T22:48:06.287Z","type":"review_saved","task":"TASK-010","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":1,"info":2}}
 {"ts":"2026-11-09T22:48:14.618Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
 {"ts":"2026-11-09T22:48:17.932Z","type":"transition","task":"TASK-010","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-09T22:51:59.930Z","type":"transition","task":"TASK-007","from":"ready","to":"in_progress","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-09T22:54:04.926Z","type":"handoff_rejected","task":"TASK-007","errors":["unparseable frontmatter: Plain scalar contains \": \" — quote the value: Documented the subtitles/translation feature as bu (line 6)"]}
+{"ts":"2026-11-09T22:54:15.021Z","type":"handoff_rejected","task":"TASK-007","errors":["unparseable frontmatter: Invalid double-quoted string (line 33)"]}
+{"ts":"2026-11-09T22:54:37.931Z","type":"subagent_stop","agent":"docs-writer","has_handoff":false,"retry":false}
+{"ts":"2026-11-09T22:59:47.868Z","type":"handoff_rejected","task":"TASK-007","errors":["unparseable frontmatter: Invalid double-quoted string (line 33)"]}
+{"ts":"2026-11-09T23:00:48.122Z","type":"handoff_rejected","task":"TASK-007","errors":["unparseable frontmatter: Invalid double-quoted string (line 33)"]}
+{"ts":"2026-11-09T23:02:23.665Z","type":"handoff_rejected","task":"TASK-007","errors":["unparseable frontmatter: Invalid double-quoted string (line 33)"]}
+{"ts":"2026-11-09T23:02:32.452Z","type":"handoff_rejected","task":"TASK-007","errors":["unparseable frontmatter: Invalid double-quoted string (line 33)"]}
+{"ts":"2026-11-09T23:02:52.223Z","type":"handoff_saved","task":"TASK-007","status":"done_with_concerns","agent":"docs-writer"}
+{"ts":"2026-11-09T23:02:52.372Z","type":"transition","task":"TASK-007","from":"in_progress","to":"review","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-09T23:04:09.454Z","type":"review_saved","task":"TASK-007","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":1,"info":3}}
+{"ts":"2026-11-09T23:04:17.441Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-09T23:04:20.591Z","type":"transition","task":"TASK-007","from":"review","to":"done","agent":"docs-writer","attempts":0,"reason":null}
