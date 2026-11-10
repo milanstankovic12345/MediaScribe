@@ -1,7 +1,7 @@
 ---
 id: TASK-016
 title: Fix secret_store encode errors, private ctypes prototypes and save-failure status
-status: ready
+status: review
 agent: implementer
 skills: []
 model_tier: coding

@@ -73,22 +73,24 @@ class SettingsScreen(ctk.CTkFrame):
         self.key_entry.configure(show="" if hidden else "*")
         self.show_btn.configure(text="Hide" if hidden else "Show")
 
-    def _persist(self):
+    def _persist(self) -> bool:
         try:
             settings.save(self.cfg)
         except OSError:
             self.status.configure(text="Could not write the settings file.")
+            return False
+        return True
 
     def _save(self):
         self.cfg["gemini_api_key"] = self.key_entry.get().strip()
-        self._persist()
-        self._refresh_status()
+        if self._persist():
+            self._refresh_status()
 
     def _disconnect(self):
         self.cfg["gemini_api_key"] = ""
         self.key_entry.delete(0, "end")
-        self._persist()
-        self._refresh_status()
+        if self._persist():
+            self._refresh_status()
 
     def _refresh_status(self):
         if settings.get_gemini_key({}):

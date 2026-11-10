@@ -11,40 +11,46 @@ class SecretStoreError(OSError):
 _UI_FORBIDDEN = 0x1
 
 
+import ctypes
+from ctypes import wintypes
+
+
+class DATA_BLOB(ctypes.Structure):
+    _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(ctypes.c_char))]
+
+
+_dlls = None
+
+
 def _api():
-    import ctypes
-    from ctypes import wintypes
-
-    class DATA_BLOB(ctypes.Structure):
-        _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(ctypes.c_char))]
-
-    crypt32 = ctypes.windll.crypt32
-    kernel32 = ctypes.windll.kernel32
-    pblob = ctypes.POINTER(DATA_BLOB)
-    for fn in (crypt32.CryptProtectData, crypt32.CryptUnprotectData):
-        fn.restype = wintypes.BOOL
-    crypt32.CryptProtectData.argtypes = [
-        pblob, wintypes.LPCWSTR, pblob, ctypes.c_void_p, ctypes.c_void_p, wintypes.DWORD, pblob]
-    crypt32.CryptUnprotectData.argtypes = [
-        pblob, ctypes.c_void_p, pblob, ctypes.c_void_p, ctypes.c_void_p, wintypes.DWORD, pblob]
-    kernel32.LocalFree.argtypes = [ctypes.c_void_p]
-    kernel32.LocalFree.restype = ctypes.c_void_p
-    return ctypes, DATA_BLOB, crypt32, kernel32
+    """Private WinDLL handles with prototypes set once (never touches ctypes.windll)."""
+    global _dlls
+    if _dlls is None:
+        crypt32 = ctypes.WinDLL("crypt32")
+        kernel32 = ctypes.WinDLL("kernel32")
+        pblob = ctypes.POINTER(DATA_BLOB)
+        for fn in (crypt32.CryptProtectData, crypt32.CryptUnprotectData):
+            fn.restype = wintypes.BOOL
+        crypt32.CryptProtectData.argtypes = [
+            pblob, wintypes.LPCWSTR, pblob, ctypes.c_void_p, ctypes.c_void_p, wintypes.DWORD, pblob]
+        crypt32.CryptUnprotectData.argtypes = [
+            pblob, ctypes.c_void_p, pblob, ctypes.c_void_p, ctypes.c_void_p, wintypes.DWORD, pblob]
+        kernel32.LocalFree.argtypes = [ctypes.c_void_p]
+        kernel32.LocalFree.restype = ctypes.c_void_p
+        _dlls = (crypt32, kernel32)
+    return _dlls
 
 
 def _run(protect: bool, data: bytes) -> bytes:
     if sys.platform != "win32":
         raise SecretStoreError("DPAPI is only available on Windows")
     try:
-        ctypes, DATA_BLOB, crypt32, kernel32 = _api()
+        crypt32, kernel32 = _api()
         buf = ctypes.create_string_buffer(data, len(data))
         inp = DATA_BLOB(len(data), ctypes.cast(buf, ctypes.POINTER(ctypes.c_char)))
         out = DATA_BLOB()
         fn = crypt32.CryptProtectData if protect else crypt32.CryptUnprotectData
-        if protect:
-            ok = fn(ctypes.byref(inp), None, None, None, None, _UI_FORBIDDEN, ctypes.byref(out))
-        else:
-            ok = fn(ctypes.byref(inp), None, None, None, None, _UI_FORBIDDEN, ctypes.byref(out))
+        ok = fn(ctypes.byref(inp), None, None, None, None, _UI_FORBIDDEN, ctypes.byref(out))
         if not ok:
             raise SecretStoreError("DPAPI call failed")
         try:
@@ -60,7 +66,13 @@ def _run(protect: bool, data: bytes) -> bytes:
 def protect(text: str) -> str:
     if not isinstance(text, str):
         raise SecretStoreError("text must be a string")
-    return base64.b64encode(_run(True, text.encode("utf-8"))).decode("ascii")
+    try:
+        data = text.encode("utf-8")
+    except UnicodeError:
+        data = None
+    if data is None:  # raised outside the except block so no __context__ chain keeps the text
+        raise SecretStoreError("text is not encodable") from None
+    return base64.b64encode(_run(True, data)).decode("ascii")
 
 
 def unprotect(token: str) -> str:

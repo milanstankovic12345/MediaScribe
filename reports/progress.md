@@ -50,3 +50,6 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-10 TASK-015 → docs-writer (haiku) base=2e8b2fe
 - 2026-11-10 TASK-015 handoff OK → code review r1 (opus)
 - 2026-11-10 TASK-015 done (gate PASS r1; code approve_with_notes: CR-1 medium techstack Gemini row lacks retryDelay + invalid gemini_model fallback, CR-2 low CLAUDE.md:24 says translator.translate for Local engine, CR-3 info 3-request cap is per call; docs gitignored; stale TASK-015.md.rejected left)
+- 2026-11-10 TASK-016 → implementer (sonnet) base=34d954d
+- 2026-11-10 TASK-016 handoff OK → code + security review r1 (opus, parallel)
+- 2026-11-10 TASK-016 review r1: code approve_with_notes saved (CR-1 medium order-dependent SEC-2 test, CR-2 low import placement, CR-3 info unprotect/_run exception chain); security approve (SEC-1..3 info) NOT saved - read-only guard blocked save; gate BLOCKED awaiting security review file; needs human
