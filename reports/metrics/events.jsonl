@@ -156,3 +156,17 @@
 {"ts":"2026-11-10T15:36:36.511Z","type":"review_saved","task":"TASK-013","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":0,"info":3}}
 {"ts":"2026-11-10T15:36:43.683Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
 {"ts":"2026-11-10T15:36:47.032Z","type":"transition","task":"TASK-013","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T15:42:57.245Z","type":"transition","task":"TASK-014","from":"ready","to":"in_progress","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T15:43:53.800Z","type":"handoff_saved","task":"TASK-014","status":"done","agent":"implementer"}
+{"ts":"2026-11-10T15:44:00.193Z","type":"subagent_stop","agent":"implementer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T15:44:03.677Z","type":"transition","task":"TASK-014","from":"in_progress","to":"review","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T15:48:39.985Z","type":"review_rejected","task":"TASK-014","kind":"code","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/","schema $.findings[1].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T15:48:54.499Z","type":"review_saved","task":"TASK-014","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":3,"info":2}}
+{"ts":"2026-11-10T15:49:05.031Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T15:49:27.106Z","type":"review_rejected","task":"TASK-014","kind":"security","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/","schema $.findings[2].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T15:49:47.702Z","type":"review_saved","task":"TASK-014","kind":"security","reviewer":"security-reviewer","verdict":"approve","findings":{"critical":0,"high":0,"medium":0,"low":1,"info":3}}
+{"ts":"2026-11-10T15:49:59.350Z","type":"subagent_stop","agent":"security-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T15:50:03.357Z","type":"transition","task":"TASK-014","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T17:13:16.965Z","type":"task_created","task":"TASK-016","agent":"implementer"}
+{"ts":"2026-11-10T17:14:00.742Z","type":"transition","task":"TASK-016","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":"fully specified follow-up for TASK-014 SEC-1, SEC-2, CR-1"}
+{"ts":"2026-11-10T17:14:11.043Z","type":"subagent_stop","agent":"planner","has_handoff":false,"retry":false}

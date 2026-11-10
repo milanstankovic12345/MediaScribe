@@ -44,3 +44,6 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-10 TASK-013 → implementer (sonnet) base=fb6fe58 (uncommitted TASK-012 work in tree)
 - 2026-11-10 TASK-013 handoff OK → code review r1 (opus)
 - 2026-11-10 TASK-013 done (gate PASS r1; code approve_with_notes: CR-1 info Serbian Latin input + Cyrillic target now stays Latin (no Gemini), CR-2 info no progress cb on same-language path, CR-3 info single-chunk log test)
+- 2026-11-10 TASK-014 → implementer (sonnet) base=cf0c2c1
+- 2026-11-10 TASK-014 handoff OK → code + security review r1 (opus, parallel)
+- 2026-11-10 TASK-014 done (gate PASS r1; code approve_with_notes CR-1..3 low (save-fail status overwritten, vacuous leak test, dup branch), CR-4/5 info; security approve SEC-1 low UnicodeEncodeError escapes SecretStoreError, SEC-2 info shared crypt32 argtypes break yt-dlp DPAPI, SEC-3/4 info; tests/ gitignored; UI unverified)

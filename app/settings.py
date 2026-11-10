@@ -2,6 +2,8 @@ import json
 import os
 from pathlib import Path
 
+from app import secret_store
+
 DEFAULTS = {
     "output_dir": str(Path.home() / "Downloads" / "yt-tool"),
     "model": "small",
@@ -36,6 +38,12 @@ def load(path: Path | None = None) -> dict:
         data.update(json.loads(path.read_text(encoding="utf-8")))
     except (OSError, ValueError):
         pass
+    if "gemini_api_key_enc" in data:
+        enc = data.pop("gemini_api_key_enc")
+        try:
+            data["gemini_api_key"] = secret_store.unprotect(enc)
+        except secret_store.SecretStoreError:
+            data["gemini_api_key"] = ""
     base = Path(data["output_dir"])
     for key, sub in DIR_SUBFOLDERS.items():
         data.setdefault(key, str(base / sub))
@@ -48,7 +56,12 @@ def get_gemini_key(cfg: dict) -> str:
 
 
 def save(data: dict, path: Path | None = None) -> None:
-    """Persist settings as JSON."""
+    """Persist settings as JSON; the Gemini key is stored only DPAPI-encrypted."""
     path = path or config_path()
+    out = dict(data)
+    key = out.pop("gemini_api_key", "")
+    out.pop("gemini_api_key_enc", None)
+    if isinstance(key, str) and key.strip():
+        out["gemini_api_key_enc"] = secret_store.protect(key.strip())
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(out, indent=2), encoding="utf-8")

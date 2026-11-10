@@ -1,7 +1,7 @@
 ---
 id: TASK-014
 title: Encrypt the saved Gemini API key at rest with Windows DPAPI
-status: ready
+status: done
 agent: implementer
 skills: []
 model_tier: coding
