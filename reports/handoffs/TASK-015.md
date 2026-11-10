@@ -1,0 +1,52 @@
+---
+task: TASK-015
+agent: docs-writer
+model: claude-haiku-5-5
+attempt: 1
+status: done
+summary: Updated CLAUDE.md, docs/blueprint.md and docs/techstack.md to describe the Gemini retry/redirect/model-name hardening, the same-language skip and unsupported-source fallback, and DPAPI key storage as built in TASK-012..014. Every fact was checked against app/gemini.py, app/translator.py, app/settings.py, app/secret_store.py and the tests.
+files_modified:
+  - CLAUDE.md
+  - docs/blueprint.md
+  - docs/techstack.md
+tests:
+  - cmd: .venv/Scripts/python -c "import pathlib,sys; t=[pathlib.Path(p).read_text(encoding='utf-8') for p in ('CLAUDE.md','docs/blueprint.md','docs/techstack.md')]; sys.exit(int('urlopen' in t[0] or 'gemini._open' not in t[0] or not all('DPAPI' in x for x in t)))"
+    exit_code: 0
+    summary: task validation check passed (no urlopen in CLAUDE.md, gemini._open present, DPAPI in all three files)
+  - cmd: .venv/Scripts/python -m pytest -q
+    exit_code: 0
+    summary: 170 passed, 2 skipped
+  - cmd: ! grep -rnE "urlopen|429 backoff" CLAUDE.md docs/blueprint.md docs/techstack.md
+    exit_code: 0
+    summary: no stale wording left (inverted grep; exit 0 means no match was found)
+unresolved: []
+risks:
+  - CLAUDE.md, docs/ and tests/ are listed in .gitignore, so these doc edits do not appear in git status or diffs. This is the project's deliberate choice (the task says not to change it), so reviewers should read the files on disk.
+  - A rejected draft from the first save attempt remains at reports/handoffs/TASK-015.md.rejected. The shell guard blocked its removal; the orchestrator may delete it.
+decisions:
+  - Added tests/test_gemini.py and tests/test_settings_secret.py to the CLAUDE.md test-file list and the Tests gotcha, and to the blueprint tests row, since they exist and run in the suite.
+  - Added a separate "Key storage" row to docs/techstack.md rather than folding DPAPI into the Gemini row.
+  - Left the Architecture "Settings" bullet in CLAUDE.md unchanged; the DPAPI details live in the Gemini gotcha only.
+next_steps:
+  - Nothing further in this task. README.md, docs/prd.md and docs/tasks.md were not touched (out of scope).
+blocker: null
+---
+
+## What changed
+- CLAUDE.md: Gemini gotcha rewritten (DPAPI `gemini_api_key_enc`, legacy migration on next save, undecryptable treated as unset, env override kept, `gemini._open` with refusing redirects, 3xx is an error, retry codes 429/500/502/503/504 with at most 3 requests, invalid `gemini_model` falls back to `gemini.MODEL`, tests fake `gemini._open`). Architecture: test-file list adds test_gemini and test_settings_secret (real DPAPI test Windows-only); subtitles bullet now describes `translator.translate` with the same-language skip and the unsupported-source fallback. Tests gotcha lists the two new test files and "faked gemini._open".
+- docs/blueprint.md: module map adds `app/secret_store.py`; settings line mentions `gemini_api_key_enc`; gemini.py line describes retries, redirect refusal and model fallback; tests block lists the two new test files; transcribe subtitles data flow describes the same-language skip and the unsupported-source keep-original fallback.
+- docs/techstack.md: Gemini row describes retries and redirect refusal; new "Key storage" row for DPAPI via ctypes (standard library, no new dependency).
+
+## Evidence
+Every claim was checked against the code before writing:
+- retry set, backoff and the 3-request cap in `_post` and `BACKOFF`/`MAX_TRIES` in app/gemini.py;
+- `_NoRedirect` and `_open` in app/gemini.py, plus the 3xx path that maps to kind "other" (tests/test_gemini.py `test_redirect_maps_to_other_single_request`);
+- model fallback in `_post` (`_MODEL_RE`, isinstance check);
+- same-language branch and unsupported-source fallback in app/translator.py (`translate`, inner `fallback`);
+- `load`/`save` migration and failure handling in app/settings.py, and `protect`/`unprotect` in app/secret_store.py.
+
+The validation commands above were run in this session. The full suite result matches TASK-014 (170 passed, 2 skipped).
+
+## Notes for the next session
+- The "Tests mock urlopen" finding (CR-2 in reports/reviews/TASK-011-code.md) is resolved by these doc edits. The code-side CR-2 items (app/gemini.py comments, tests/test_gemini.py docstrings) were handled in TASK-012 per its handoff.
+- Out of scope and not touched: README.md, docs/prd.md, docs/tasks.md. The reviewer for this task may want to confirm the wording against the code.

@@ -170,3 +170,12 @@
 {"ts":"2026-11-10T17:13:16.965Z","type":"task_created","task":"TASK-016","agent":"implementer"}
 {"ts":"2026-11-10T17:14:00.742Z","type":"transition","task":"TASK-016","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":"fully specified follow-up for TASK-014 SEC-1, SEC-2, CR-1"}
 {"ts":"2026-11-10T17:14:11.043Z","type":"subagent_stop","agent":"planner","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T17:17:38.918Z","type":"transition","task":"TASK-015","from":"ready","to":"in_progress","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-10T17:18:53.801Z","type":"handoff_rejected","task":"TASK-015","errors":["status \"done\" but 1 command(s) exited non-zero: grep -rn \"urlopen\\|429 backoff\" CLAUDE.md docs/blueprint.md docs/techstack.md"]}
+{"ts":"2026-11-10T17:19:08.845Z","type":"handoff_saved","task":"TASK-015","status":"done","agent":"docs-writer"}
+{"ts":"2026-11-10T17:19:12.284Z","type":"subagent_stop","agent":"docs-writer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T17:19:15.778Z","type":"transition","task":"TASK-015","from":"in_progress","to":"review","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-10T17:23:45.737Z","type":"review_rejected","task":"TASK-015","kind":"code","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T17:24:03.888Z","type":"review_saved","task":"TASK-015","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":1,"low":1,"info":1}}
+{"ts":"2026-11-10T17:24:12.995Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T17:24:20.379Z","type":"transition","task":"TASK-015","from":"review","to":"done","agent":"docs-writer","attempts":0,"reason":null}

@@ -1,7 +1,7 @@
 ---
 id: TASK-015
 title: Document Gemini hardening, same-language skip and DPAPI key storage
-status: ready
+status: done
 agent: docs-writer
 skills: []
 model_tier: fast
