@@ -26,7 +26,7 @@ class AudioScreen(Screen):
         self._say("Downloading audio...")
         path, _title = downloader.download_audio(url, out, self._prog, quality)
         self._say(f"Saved: {path}")
-        return f"Audio saved:\n{path}"
+        return f"Audio saved:\n{path}", path
 
     def _run_item(self, url, out, args, prefix, cb):
         path, _title = downloader.download_audio(url, out, cb, args[0], prefix)

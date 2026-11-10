@@ -60,3 +60,11 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-10 TASK-017 scope widened to tests/test_gemini.py (user); re-dispatch implementer
 - 2026-11-10 TASK-017 handoff OK (181 passed) → code review r1
 - 2026-11-10 TASK-017 done (gate PASS r1; code approve_with_notes: CR-1 low untested URL bindings, CR-2 low cancelled-dialog test incomplete, CR-3/CR-4 info; tests/ gitignored)
+- 2026-11-10 TASK-018 → implementer (sonnet) base=1668a3f
+- 2026-11-10 TASK-018 handoff OK (191 passed) → code review r1
+- 2026-11-10 TASK-018 done (gate PASS r1; code approve_with_notes: CR-1/CR-2 low test gaps (_run saved path, open_folder defaults/warning), CR-3 info OSError silent, CR-4 info _poll no finally; dialog checked in real Tk, Explorer launch not run)
+- 2026-11-10 TASK-019 Q1-Q5 answered (recommended; Q2/Q3 follow-ups wanted) → implementer (sonnet) base=1668a3f
+- 2026-11-10 TASK-019 handoff OK (196 passed) → code review r1
+- 2026-11-10 TASK-019 done (gate PASS r1; code approve_with_notes: CR-1 low _start_mode untested, CR-2 low _args test checks only md/pdf/subs, CR-3 low unused button_text, CR-4 info Gemini hint in transcribe mode; layout not visually verified; Q2/Q3 follow-up tasks requested by user)
+- 2026-11-10 TASK-020 draft→ready (deps done) → docs-writer base=1668a3f
+- 2026-11-10 TASK-020 done (gate PASS r1; code approve_with_notes: CR-1 medium blueprint.md:35 stale 'subtitles, if ticked' (AC3 leftover), CR-2 low blueprint.md:39 missing-folder opens parent, CR-3 low CLAUDE.md:21 OK button still shown, CR-4 info CLAUDE.md:23/40 not updated; leftover reports/handoffs/TASK-020.md.rejected)

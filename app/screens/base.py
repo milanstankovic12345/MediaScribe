@@ -6,6 +6,7 @@ from tkinter import filedialog, messagebox
 import customtkinter as ctk
 
 from app import downloader
+from app.screens.done_dialog import DoneDialog, done_payload
 from app.screens.playlist_dialog import PlaylistDialog
 
 
@@ -49,8 +50,9 @@ class Screen(ctk.CTkFrame):
         self.out_entry.grid(row=0, column=0, sticky="ew")
         ctk.CTkButton(out, text="Output folder", width=110, command=self._pick_dir).grid(row=0, column=1, padx=(4, 0))
 
-        self.button = ctk.CTkButton(self, text=self.button_text, height=40, command=self._start)
-        self.button.grid(row=3, column=0, padx=16, pady=8, sticky="ew")
+        actions = ctk.CTkFrame(self, fg_color="transparent")
+        actions.grid(row=3, column=0, padx=16, pady=8, sticky="ew")
+        self.action_buttons = self._build_actions(actions)
         self.bar = ctk.CTkProgressBar(self)
         self.bar.set(0)
         self.bar.grid(row=4, column=0, padx=16, pady=4, sticky="ew")
@@ -61,6 +63,13 @@ class Screen(ctk.CTkFrame):
     # ---- hooks for subclasses
     def _build_options(self, parent):
         pass
+
+    def _build_actions(self, parent) -> list:
+        """Create the action button(s) in `parent`; return them (all disabled while busy)."""
+        parent.columnconfigure(0, weight=1)
+        self.button = ctk.CTkButton(parent, text=self.button_text, height=40, command=self._start)
+        self.button.grid(row=0, column=0, sticky="ew")
+        return [self.button]
 
     def _validate(self, url: str) -> str | None:
         """Return a warning message if input is invalid, else None."""
@@ -98,7 +107,8 @@ class Screen(ctk.CTkFrame):
 
     def _set_busy(self, busy: bool):
         self.busy = busy
-        self.button.configure(state="disabled" if busy else "normal")
+        for b in self.action_buttons:
+            b.configure(state="disabled" if busy else "normal")
         if busy:
             self.bar.set(0)
 
@@ -159,7 +169,7 @@ class Screen(ctk.CTkFrame):
             msg = f"Playlist saved ({n - len(failed)}/{n} ok):\n{out}"
             if failed:
                 msg += "\n\nFailed:\n" + "\n".join(failed)
-            self.q.put(("done", msg))
+            self.q.put(("done", (msg, out)))
         except Exception as ex:
             self.q.put(("error", str(ex)))
 
@@ -183,7 +193,8 @@ class Screen(ctk.CTkFrame):
                     self._set_busy(False)
                     self.bar.set(1)
                     self._log("Done.")
-                    messagebox.showinfo("Done", val or "Finished.")
+                    message, path = done_payload(val)
+                    DoneDialog(self, message, path)
                 elif kind == "error":
                     self._set_busy(False)
                     self._log(f"ERROR: {val}")

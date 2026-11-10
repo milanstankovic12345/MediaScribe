@@ -26,7 +26,7 @@ class VideoScreen(Screen):
         self._say("Downloading video...")
         path, _title = downloader.download_video(url, out, self._prog, quality)
         self._say(f"Saved: {path}")
-        return f"Video saved:\n{path}"
+        return f"Video saved:\n{path}", path
 
     def _run_item(self, url, out, args, prefix, cb):
         path, _title = downloader.download_video(url, out, cb, args[0], prefix)

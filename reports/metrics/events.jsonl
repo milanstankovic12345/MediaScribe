@@ -207,3 +207,45 @@
 {"ts":"2026-11-10T20:56:49.804Z","type":"review_saved","task":"TASK-017","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":2,"info":2}}
 {"ts":"2026-11-10T20:56:58.212Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
 {"ts":"2026-11-10T20:57:01.638Z","type":"transition","task":"TASK-017","from":"review","to":"done","agent":"implementer","attempts":1,"reason":null}
+{"ts":"2026-11-10T21:08:48.596Z","type":"task_created","task":"TASK-018","agent":"implementer"}
+{"ts":"2026-11-10T21:08:48.662Z","type":"task_created","task":"TASK-019","agent":"implementer"}
+{"ts":"2026-11-10T21:08:48.743Z","type":"task_created","task":"TASK-020","agent":"docs-writer"}
+{"ts":"2026-11-10T21:10:09.215Z","type":"transition","task":"TASK-018","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:10:28.007Z","type":"subagent_stop","agent":"planner","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T21:13:46.198Z","type":"transition","task":"TASK-018","from":"ready","to":"in_progress","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:14:46.241Z","type":"handoff_saved","task":"TASK-018","status":"done_with_concerns","agent":"implementer"}
+{"ts":"2026-11-10T21:14:49.324Z","type":"subagent_stop","agent":"implementer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T21:14:52.398Z","type":"transition","task":"TASK-018","from":"in_progress","to":"review","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:18:53.466Z","type":"review_rejected","task":"TASK-018","kind":"code","errors":["schema $: missing required property \"kind\"","schema $: missing required property \"reviewer\"","schema $: missing required property \"verdict\"","schema $: missing required property \"scope_checked\"","schema $: missing required property \"findings\"","review kind \"undefined\" does not match code"]}
+{"ts":"2026-11-10T21:19:43.237Z","type":"review_rejected","task":"TASK-018","kind":"code","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/","schema $.findings[1].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T21:19:43.659Z","type":"review_saved","task":"TASK-018","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":1,"info":0}}
+{"ts":"2026-11-10T21:20:01.931Z","type":"review_saved","task":"TASK-018","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":2,"info":2}}
+{"ts":"2026-11-10T21:20:10.168Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T21:20:15.317Z","type":"transition","task":"TASK-018","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:29:28.049Z","type":"transition","task":"TASK-019","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":"Q1-Q5 answered by user (all recommended; Q2/Q3 follow-ups wanted)"}
+{"ts":"2026-11-10T21:29:28.210Z","type":"transition","task":"TASK-019","from":"ready","to":"in_progress","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:30:56.470Z","type":"handoff_saved","task":"TASK-019","status":"done","agent":"implementer"}
+{"ts":"2026-11-10T21:30:58.282Z","type":"subagent_stop","agent":"implementer","has_handoff":true,"retry":false}
+{"ts":"2026-11-10T21:31:01.034Z","type":"subagent_stop","agent":"implementer","has_handoff":false,"retry":true}
+{"ts":"2026-11-10T21:31:04.214Z","type":"transition","task":"TASK-019","from":"in_progress","to":"review","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:34:13.212Z","type":"review_rejected","task":"TASK-019","kind":"code","errors":["schema $.findings[1].acceptance_ref: must match /^RA-[0-9]{3,}$/","schema $.findings[3].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T21:34:26.725Z","type":"review_saved","task":"TASK-019","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":3,"info":1}}
+{"ts":"2026-11-10T21:34:35.673Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T21:34:39.089Z","type":"transition","task":"TASK-019","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:48:34.910Z","type":"task_created","task":"TASK-021","agent":"implementer"}
+{"ts":"2026-11-10T21:48:34.989Z","type":"task_created","task":"TASK-022","agent":"implementer"}
+{"ts":"2026-11-10T21:48:35.075Z","type":"task_created","task":"TASK-023","agent":"implementer"}
+{"ts":"2026-11-10T21:48:35.153Z","type":"task_created","task":"TASK-024","agent":"implementer"}
+{"ts":"2026-11-10T21:48:35.237Z","type":"task_created","task":"TASK-025","agent":"docs-writer"}
+{"ts":"2026-11-10T21:50:25.922Z","type":"transition","task":"TASK-021","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":"fully specified, no open questions"}
+{"ts":"2026-11-10T21:50:44.751Z","type":"subagent_stop","agent":"planner","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T21:53:36.282Z","type":"transition","task":"TASK-020","from":"draft","to":"ready","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:53:36.375Z","type":"transition","task":"TASK-020","from":"ready","to":"in_progress","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:54:49.376Z","type":"handoff_rejected","task":"TASK-020","errors":["schema $.next_steps[0]: expected string, got object"]}
+{"ts":"2026-11-10T21:55:03.708Z","type":"handoff_saved","task":"TASK-020","status":"done","agent":"docs-writer"}
+{"ts":"2026-11-10T21:55:07.991Z","type":"subagent_stop","agent":"docs-writer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T21:55:11.483Z","type":"transition","task":"TASK-020","from":"in_progress","to":"review","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-10T21:58:43.144Z","type":"review_rejected","task":"TASK-020","kind":"code","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/","schema $.findings[1].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T21:59:01.784Z","type":"review_saved","task":"TASK-020","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":1,"low":2,"info":1}}
+{"ts":"2026-11-10T21:59:10.419Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T21:59:18.952Z","type":"transition","task":"TASK-020","from":"review","to":"done","agent":"docs-writer","attempts":0,"reason":null}

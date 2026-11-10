@@ -16,12 +16,14 @@ SRT_ONLY, EMBED, BURN = "SRT file only", "Embed into video (fast)", "Burn into v
 SUB_VIDEO_MODES = [SRT_ONLY, EMBED, BURN]
 GEMINI_HINT = "Gemini is not connected. Get a free API key, then paste it in Settings."
 NO_FILE_TEXT = "Or use a local file: (none)"
+MODE_TRANSCRIBE, MODE_SUBTITLES = "transcribe", "subtitles"
 
 
 class TranscribeScreen(Screen):
     button_text = "Transcribe"
     dir_key = "transcribe_dir"
     show_url_clear = False  # has its own Clear (URL + local file)
+    mode = MODE_TRANSCRIBE  # set by the action buttons just before _start
 
     def __init__(self, master, cfg):
         self.local_file: Path | None = None
@@ -56,10 +58,7 @@ class TranscribeScreen(Screen):
 
         sub_row = ctk.CTkFrame(parent, fg_color="transparent")
         sub_row.grid(row=2, column=0, pady=(8, 0), sticky="ew")
-        self.sub_var = ctk.BooleanVar(value=bool(self.cfg["subtitles"]))
-        ctk.CTkCheckBox(sub_row, text="Subtitles", variable=self.sub_var, width=20,
-                        command=self._toggle_subs).pack(side="left")
-        ctk.CTkLabel(sub_row, text="Translate to:").pack(side="left", padx=(8, 0))
+        ctk.CTkLabel(sub_row, text="Translate to:").pack(side="left")
         self.sub_target = ctk.CTkOptionMenu(sub_row, values=list(translator.TARGETS), width=170,
                                          command=lambda _v: self._update_guidance())
         self.sub_target.set(self.cfg["sub_target"] if self.cfg["sub_target"] in translator.TARGETS
@@ -86,17 +85,26 @@ class TranscribeScreen(Screen):
         ctk.CTkButton(self.guidance, text="Open Settings", width=110,
                       command=lambda: self.master.show("settings")).pack(side="left")
         self.guidance.grid(row=4, column=0, pady=(8, 0), sticky="ew")
-        self._toggle_subs()
-
-    def _toggle_subs(self):
-        state = "normal" if self.sub_var.get() else "disabled"
-        self.sub_target.configure(state=state)
-        self.sub_video.configure(state=state)
-        self.engine.configure(state=state)
         self._update_guidance()
 
+    def _build_actions(self, parent):
+        parent.columnconfigure((0, 1), weight=1, uniform="actions")
+        self.button = ctk.CTkButton(parent, text="Transcribe", height=40,
+                                    command=lambda: self._start_mode(MODE_TRANSCRIBE))
+        self.button.grid(row=0, column=0, sticky="ew", padx=(0, 4))
+        self.subs_button = ctk.CTkButton(parent, text="Translate / Subtitles", height=40,
+                                         command=lambda: self._start_mode(MODE_SUBTITLES))
+        self.subs_button.grid(row=0, column=1, sticky="ew", padx=(4, 0))
+        return [self.button, self.subs_button]
+
+    def _start_mode(self, mode):
+        if self.busy:
+            return
+        self.mode = mode
+        self._start()
+
     def _gemini_missing(self) -> bool:
-        return (self.sub_var.get() and self.engine.get() == translator.GEMINI_ENGINE
+        return (self.engine.get() == translator.GEMINI_ENGINE
                 and self.sub_target.get() != translator.ORIGINAL
                 and not settings.get_gemini_key(self.cfg))
 
@@ -135,30 +143,31 @@ class TranscribeScreen(Screen):
         local = self._source_file(url)
         if not url and not local:
             return "Paste a URL or choose a local file."
-        subs = self.sub_var.get()
-        if not (self.md_var.get() or self.pdf_var.get() or subs):
-            return "Tick Markdown, PDF and/or Subtitles."
-        if (subs and self.sub_video.get() != SRT_ONLY and local
+        if self.mode == MODE_TRANSCRIBE:
+            if not (self.md_var.get() or self.pdf_var.get()):
+                return "Tick Markdown and/or PDF."
+            return None
+        if (self.sub_video.get() != SRT_ONLY and local
                 and local.suffix.lower() not in VIDEO_EXTS):
             return "Embed/Burn needs a video file or a URL."
-        engine = getattr(self, "engine", None)
-        if (subs and engine is not None and engine.get() == translator.GEMINI_ENGINE
+        if (self.engine.get() == translator.GEMINI_ENGINE
                 and self.sub_target.get() != translator.ORIGINAL
                 and not settings.get_gemini_key(self.cfg)):
             return GEMINI_HINT
         return None
 
     def _args(self):
-        return (self.model.get(), self.md_var.get(), self.pdf_var.get(),
+        subs = self.mode == MODE_SUBTITLES
+        return (self.model.get(), self.md_var.get() and not subs, self.pdf_var.get() and not subs,
                 self._source_file(self.url.get().strip()),
-                LANGUAGES[self.language.get()], self.sub_var.get(), self.sub_target.get(),
+                LANGUAGES[self.language.get()], subs, self.sub_target.get(),
                 self.sub_video.get(), self.engine.get(), settings.get_gemini_key(self.cfg),
                 self.cfg.get("gemini_model") or None)
 
     def collect_cfg(self):
         return {**super().collect_cfg(), "model": self.model.get(), "language": self.language.get(),
                 "markdown": self.md_var.get(), "pdf": self.pdf_var.get(),
-                "subtitles": self.sub_var.get(), "sub_target": self.sub_target.get(),
+                "sub_target": self.sub_target.get(),
                 "sub_video": self.sub_video.get(), "translator": self.engine.get()}
 
     @staticmethod
@@ -226,4 +235,4 @@ class TranscribeScreen(Screen):
                 self._prog(1.0)
         for p in saved:
             self._say(f"Saved: {p}")
-        return "Saved:" + chr(10) + chr(10).join(str(p) for p in saved)
+        return "Saved:" + chr(10) + chr(10).join(str(p) for p in saved), (saved[-1] if saved else None)

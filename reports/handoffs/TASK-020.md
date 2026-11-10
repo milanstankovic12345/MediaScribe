@@ -1,0 +1,47 @@
+---
+task: TASK-020
+agent: docs-writer
+model: claude-haiku-5-5
+attempt: 0
+status: done
+summary: Documented the Done dialog Open folder button and the two Transcribe buttons in docs/blueprint.md, CLAUDE.md and docs/tasks.md (round 5, items 30 and 31). Every claim was checked against app/screens/done_dialog.py, base.py, transcribe.py, audio.py, video.py and the TASK-018/019 handoffs; both validation commands exit 0.
+files_modified:
+  - docs/blueprint.md
+  - CLAUDE.md
+  - docs/tasks.md
+tests:
+  - cmd: .venv/Scripts/python -c "import pathlib,sys; c=pathlib.Path('CLAUDE.md').read_text(encoding='utf-8'); b=pathlib.Path('docs/blueprint.md').read_text(encoding='utf-8'); sys.exit(int(not ('done_dialog' in c and 'done_dialog' in b and 'Open folder' in c and 'Open folder' in b and 'action_buttons' in b)))"
+    exit_code: 0
+    summary: doc marker check passed (done_dialog, Open folder, action_buttons present in the required files)
+  - cmd: .venv/Scripts/python -m pytest -q
+    exit_code: 0
+    summary: 196 passed, 2 skipped
+unresolved:
+  - Documented UI layout (two buttons side by side, Open folder dialog) is not visually verified; no window was launched.
+  - The Explorer open path (explorer /select and os.startfile) is documented from code and tests only; not run manually on Explorer.
+risks: []
+decisions:
+  - TASK-019 uses the name action_buttons (base.py) and the mode names MODE_TRANSCRIBE / MODE_SUBTITLES, so no name mismatch was found and nothing was invented.
+  - Transcribe's done path is the last saved file (pdf or md in Transcribe mode; srt or embed/burn mp4 in Translate / Subtitles mode), as in the code.
+  - Round 5 added to docs/tasks.md as items 30 and 31 (next free numbers after 29); item 28 left unchanged.
+  - CLAUDE.md and docs/ are gitignored by project choice; the edits are on disk only and do not appear in git status.
+  - README.md, docs/prd.md and docs/techstack.md were not touched.
+next_steps:
+  - "Manual check: run a short audio download, click Open folder, confirm Explorer selects the file; run the Transcribe screen and confirm the two buttons sit side by side."
+blocker: null
+---
+
+## What changed
+- docs/blueprint.md: module map gains app/screens/done_dialog.py (done_payload, open_folder, DoneDialog) and tests/test_done_dialog.py; app/screens line names the `_build_actions` hook and `action_buttons`; the transcribe data flow is split into the Transcribe button (MD/PDF only) and the Translate / Subtitles button (no MD/PDF, then translation, SRT, embed/burn); the Gemini guidance sentence says only the Translate / Subtitles button is blocked; the "any combination" sentence is replaced by the two-button rules (Original allowed in the second button); UI layout describes the two buttons and the removed Subtitles checkbox; Threading describes the (message, path) done payload, the plain-str fallback, the path each screen sends, and how Open folder behaves.
+- CLAUDE.md: Architecture bullets for worker-to-UI communication (done payload and DoneDialog), a new bullet for the two Transcribe buttons, the Subtitles bullet (now tied to the Translate / Subtitles button, subs=True), and the Test files bullet (adds test_done_dialog.py, both Transcribe modes).
+- docs/tasks.md: new "Round 5 (Done popup, Transcribe buttons)" with items 30 (TASK-018) and 31 (TASK-019), both ticked. Existing items unchanged.
+
+## Evidence
+- Code read: app/screens/done_dialog.py, app/screens/base.py (_build_actions, action_buttons, _set_busy, playlist worker sends (msg, out), _poll opens DoneDialog), app/screens/transcribe.py (MODE_TRANSCRIBE / MODE_SUBTITLES, two buttons, _validate, _args, no sub_var), audio.py and video.py (_run returns (message, path)).
+- Handoffs read: reports/handoffs/TASK-018.md, reports/handoffs/TASK-019.md.
+- Commands run: validation doc-marker check (exit 0); .venv/Scripts/python -m pytest -q (196 passed, 2 skipped, exit 0).
+- The docs are gitignored, so git status does not list the three edited files.
+
+## Notes for the next session
+- Nothing in TASK-018/019 contradicted the acceptance criteria of TASK-020; no blocker.
+- Transcribe's done path is the last saved file, so Open folder selects the .pdf or .md in Transcribe mode, and the .srt or the .mp4 in Translate / Subtitles mode.
