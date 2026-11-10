@@ -21,7 +21,7 @@ ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:gene
 TIMEOUT = 60
 CHUNK_CHARS = 6000
 CONTEXT_LINES = 5
-BACKOFF = (5, 15, 30)  # seconds before retry 2, 3 (and a spare) after HTTP 429
+BACKOFF = (5, 15, 30)  # seconds before retry 2, 3 (and a spare) after HTTP 429/500/502/503/504
 MAX_TRIES = 3
 
 INVALID_KEY_MSG = "Gemini API key invalid or not allowed"
@@ -72,8 +72,8 @@ def _retry_delay(body: bytes) -> float | None:
 
 
 def _post(payload: dict, key: str, model: str | None = None) -> dict:
-    """POST one generateContent request; maps failures to GeminiError, retries HTTP 429."""
-    if not model or not _MODEL_RE.fullmatch(model):
+    """POST one generateContent request; maps failures to GeminiError, retries HTTP 429/500/502/503/504."""
+    if not isinstance(model, str) or not _MODEL_RE.fullmatch(model):
         model = MODEL
     url = ENDPOINT.format(model=model)
     data = json.dumps(payload).encode("utf-8")
@@ -86,7 +86,7 @@ def _post(payload: dict, key: str, model: str | None = None) -> dict:
         except urllib.error.HTTPError as e:
             if e.code in (400, 401, 403):
                 raise GeminiError("invalid_key", INVALID_KEY_MSG) from None
-            if e.code in (429, 500, 503):
+            if e.code in (429, 500, 502, 503, 504):
                 if attempt + 1 >= MAX_TRIES:
                     if e.code == 429:
                         raise GeminiError("rate_limited", RATE_MSG) from None
@@ -100,7 +100,7 @@ def _post(payload: dict, key: str, model: str | None = None) -> dict:
             raise GeminiError("other", f"Gemini request failed (HTTP {e.code})") from None
         except OSError:  # URLError, timeouts, connection resets
             raise GeminiError("network", NETWORK_MSG) from None
-        except ValueError:
+        except (ValueError, RecursionError):
             raise GeminiError("other", "Gemini returned an unreadable response") from None
     raise GeminiError("rate_limited", RATE_MSG)  # pragma: no cover
 
@@ -161,7 +161,7 @@ def _translate_chunk(chunk, context, target_label, key, model) -> dict[int, str]
         if not all(isinstance(t, str) for t in got.values()):
             return None
         return {i: t.strip() for i, t in got.items()}
-    except (GeminiError, ValueError, KeyError, TypeError, ArithmeticError):
+    except (GeminiError, ValueError, KeyError, TypeError, ArithmeticError, RecursionError):
         return None
 
 

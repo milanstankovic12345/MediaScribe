@@ -167,9 +167,19 @@ def translate(segments: list[Segment], src_iso: str, target_label: str, engine: 
               api_key: str = "", cb: Callable[[float], None] | None = None,
               log: Callable[[str], None] | None = None, model: str | None = None) -> list[Segment]:
     """Translate with the chosen engine; Gemini falls back to local NLLB per failed chunk."""
-    if engine != GEMINI_ENGINE or TARGETS.get(target_label) is None or not segments:
+    tgt = TARGETS.get(target_label)
+    src = WHISPER_TO_NLLB.get(src_iso)
+    if engine != GEMINI_ENGINE or tgt is None or not segments or (src is not None and src == tgt):
         return translate_segments(segments, src_iso, target_label, cb, log)
     from app import gemini
-    return gemini.translate_segments(
-        segments, target_label, api_key, cb, log, model=model,
-        fallback=lambda chunk: translate_segments(chunk, src_iso, target_label, None, log))
+
+    def fallback(chunk: list[Segment]) -> list[Segment]:
+        if src is None:
+            if log:
+                log(f"Local translation does not support '{src_iso}'; "
+                    "keeping the original text for this part.")
+            return chunk
+        return translate_segments(chunk, src_iso, target_label, None, log)
+
+    return gemini.translate_segments(segments, target_label, api_key, cb, log,
+                                     model=model, fallback=fallback)
