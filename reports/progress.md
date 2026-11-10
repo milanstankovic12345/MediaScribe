@@ -31,3 +31,10 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-09 TASK-007 → docs-writer (haiku) base=a5d18be
 - 2026-11-09 TASK-007 handoff saved by orchestrator on user instruction (agent blocked by shell guard) → code review r1
 - 2026-11-09 TASK-007 done (gate PASS r1; open notes: CR-1 low translation limited to 13 source languages undocumented, CR-2..4 info; docs/, tests/, CLAUDE.md gitignored needs human)
+- 2026-11-10 TASK-008 → implementer (sonnet) base=5cb55fb
+- 2026-11-10 TASK-008 handoff OK (done_with_concerns) → code + security review r1 (opus, parallel)
+- 2026-11-10 TASK-008 done (gate PASS r1; open notes: CR-1 medium blocked/empty Gemini response skips retry+fallback, CR-2..5 low, SEC-1/2 low key plaintext + redirect forwards key header, SEC-3/4 info; live API/UI unverified)
+- 2026-11-10 TASK-011 planned (follow-up for TASK-008 CR-1..5, SEC-2..4; SEC-1/CR-6 deferred)
+- 2026-11-10 TASK-011 → implementer (sonnet) base=5cb55fb (uncommitted TASK-008 work in tree)
+- 2026-11-10 TASK-011 handoff OK → code + security review r1 (opus, parallel)
+- 2026-11-10 TASK-011 done (gate PASS r1; open notes: CR-1 low non-str gemini_model TypeError, CR-2 low stale 429/urlopen comments + CLAUDE.md:37, CR-3 info 502/504 not retried, SEC-5 info RecursionError skips fallback; SEC-1/CR-6 still deferred; UI not visually verified)

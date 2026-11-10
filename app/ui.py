@@ -2,12 +2,14 @@ import customtkinter as ctk
 
 from app import settings
 from app.screens.audio import AudioScreen
+from app.screens.settings_screen import SettingsScreen
 from app.screens.transcribe import TranscribeScreen
 from app.screens.video import VideoScreen
 
 NAV = [("audio", "Audio (MP3)", AudioScreen),
        ("video", "Video (MP4)", VideoScreen),
-       ("transcribe", "Transcribe", TranscribeScreen)]
+       ("transcribe", "Transcribe", TranscribeScreen),
+       ("settings", "Settings", SettingsScreen)]
 
 
 class App(ctk.CTk):
@@ -40,7 +42,10 @@ class App(ctk.CTk):
 
     def show(self, key: str):
         """Raise the screen for `key` and highlight its sidebar button."""
-        self.screens[key].tkraise()
+        screen = self.screens[key]
+        screen.tkraise()
+        if hasattr(screen, "on_show"):
+            screen.on_show()
         for k, btn in self.nav_buttons.items():
             btn.configure(fg_color=("gray75", "gray25") if k == key else "transparent")
 

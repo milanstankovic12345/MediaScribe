@@ -1,10 +1,11 @@
 import tempfile
+import webbrowser
 from pathlib import Path
 from tkinter import filedialog
 
 import customtkinter as ctk
 
-from app import audio_prep, downloader, exporter, subtitles, translator
+from app import audio_prep, downloader, exporter, gemini, settings, subtitles, translator
 from app.screens.base import Screen
 from app.transcriber import LANGUAGES, MODELS, transcribe
 
@@ -13,6 +14,7 @@ MEDIA_TYPES = [("Audio/Video", "*.mp3 *.m4a *.wav *.flac *.ogg *.opus *.mp4 *.mk
 VIDEO_EXTS = {".mp4", ".mkv", ".webm", ".mov", ".avi"}
 SRT_ONLY, EMBED, BURN = "SRT file only", "Embed into video (fast)", "Burn into video (slow)"
 SUB_VIDEO_MODES = [SRT_ONLY, EMBED, BURN]
+GEMINI_HINT = "Gemini is not connected. Get a free API key, then paste it in Settings."
 NO_FILE_TEXT = "Or use a local file: (none)"
 
 
@@ -56,7 +58,8 @@ class TranscribeScreen(Screen):
         ctk.CTkCheckBox(sub_row, text="Subtitles", variable=self.sub_var, width=20,
                         command=self._toggle_subs).pack(side="left")
         ctk.CTkLabel(sub_row, text="Translate to:").pack(side="left", padx=(8, 0))
-        self.sub_target = ctk.CTkOptionMenu(sub_row, values=list(translator.TARGETS), width=170)
+        self.sub_target = ctk.CTkOptionMenu(sub_row, values=list(translator.TARGETS), width=170,
+                                         command=lambda _v: self._update_guidance())
         self.sub_target.set(self.cfg["sub_target"] if self.cfg["sub_target"] in translator.TARGETS
                             else translator.ORIGINAL)
         self.sub_target.pack(side="left", padx=8)
@@ -64,12 +67,46 @@ class TranscribeScreen(Screen):
         self.sub_video = ctk.CTkOptionMenu(sub_row, values=SUB_VIDEO_MODES, width=180)
         self.sub_video.set(self.cfg["sub_video"] if self.cfg["sub_video"] in SUB_VIDEO_MODES else SRT_ONLY)
         self.sub_video.pack(side="left", padx=8)
+
+        eng_row = ctk.CTkFrame(parent, fg_color="transparent")
+        eng_row.grid(row=3, column=0, pady=(8, 0), sticky="ew")
+        ctk.CTkLabel(eng_row, text="Translator:").pack(side="left")
+        self.engine = ctk.CTkOptionMenu(eng_row, values=translator.ENGINES, width=230,
+                                        command=lambda _v: self._update_guidance())
+        self.engine.set(self.cfg["translator"] if self.cfg["translator"] in translator.ENGINES
+                        else translator.LOCAL_ENGINE)
+        self.engine.pack(side="left", padx=8)
+
+        self.guidance = ctk.CTkFrame(parent, fg_color="transparent")
+        ctk.CTkLabel(self.guidance, text=GEMINI_HINT, text_color=("#b45309", "#fbbf24")).pack(side="left")
+        ctk.CTkButton(self.guidance, text="Get API key", width=100,
+                      command=lambda: webbrowser.open(gemini.API_KEY_URL)).pack(side="left", padx=8)
+        ctk.CTkButton(self.guidance, text="Open Settings", width=110,
+                      command=lambda: self.master.show("settings")).pack(side="left")
+        self.guidance.grid(row=4, column=0, pady=(8, 0), sticky="ew")
         self._toggle_subs()
 
     def _toggle_subs(self):
         state = "normal" if self.sub_var.get() else "disabled"
         self.sub_target.configure(state=state)
         self.sub_video.configure(state=state)
+        self.engine.configure(state=state)
+        self._update_guidance()
+
+    def _gemini_missing(self) -> bool:
+        return (self.sub_var.get() and self.engine.get() == translator.GEMINI_ENGINE
+                and self.sub_target.get() != translator.ORIGINAL
+                and not settings.get_gemini_key(self.cfg))
+
+    def _update_guidance(self):
+        if self._gemini_missing():
+            self.guidance.grid()
+        else:
+            self.guidance.grid_remove()
+
+    def on_show(self):
+        """Called by App.show: re-check the Gemini key (it may have changed in Settings)."""
+        self._update_guidance()
 
     def _pick_file(self):
         p = filedialog.askopenfilename(filetypes=MEDIA_TYPES)
@@ -91,18 +128,24 @@ class TranscribeScreen(Screen):
         if (subs and self.sub_video.get() != SRT_ONLY and self.local_file
                 and self.local_file.suffix.lower() not in VIDEO_EXTS):
             return "Embed/Burn needs a video file or a URL."
+        engine = getattr(self, "engine", None)
+        if (subs and engine is not None and engine.get() == translator.GEMINI_ENGINE
+                and self.sub_target.get() != translator.ORIGINAL
+                and not settings.get_gemini_key(self.cfg)):
+            return GEMINI_HINT
         return None
 
     def _args(self):
         return (self.model.get(), self.md_var.get(), self.pdf_var.get(), self.local_file,
                 LANGUAGES[self.language.get()], self.sub_var.get(), self.sub_target.get(),
-                self.sub_video.get())
+                self.sub_video.get(), self.engine.get(), settings.get_gemini_key(self.cfg),
+                self.cfg.get("gemini_model") or None)
 
     def collect_cfg(self):
         return {**super().collect_cfg(), "model": self.model.get(), "language": self.language.get(),
                 "markdown": self.md_var.get(), "pdf": self.pdf_var.get(),
                 "subtitles": self.sub_var.get(), "sub_target": self.sub_target.get(),
-                "sub_video": self.sub_video.get()}
+                "sub_video": self.sub_video.get(), "translator": self.engine.get()}
 
     @staticmethod
     def _lang_code(target, detected):
@@ -117,7 +160,8 @@ class TranscribeScreen(Screen):
         return nllb.split("_")[0]
 
     def _run(self, url, out, model, md, pdf, local_file, language, subs=False,
-             target=translator.ORIGINAL, sub_video=SRT_ONLY):
+             target=translator.ORIGINAL, sub_video=SRT_ONLY, engine=translator.LOCAL_ENGINE,
+             api_key="", gemini_model=None):
         saved = []
         with tempfile.TemporaryDirectory(prefix="yt-tool-") as tmp:
             tmp = Path(tmp)
@@ -147,8 +191,12 @@ class TranscribeScreen(Screen):
                 segs = t.segments
                 if target != translator.ORIGINAL:
                     self._say(f"Translating to {target}...")
-                    segs = translator.translate_segments(segs, t.language, target,
-                                                         lambda v: self._prog(0.6 + v * 0.25), self._say)
+                    cb = lambda v: self._prog(0.6 + v * 0.25)  # noqa: E731
+                    if engine == translator.GEMINI_ENGINE:
+                        segs = translator.translate(segs, t.language, target, engine, api_key,
+                                                    cb, self._say, gemini_model)
+                    else:
+                        segs = translator.translate_segments(segs, t.language, target, cb, self._say)
                 self._prog(0.85)
                 lang = self._lang_code(target, t.language)
                 stem = downloader.safe_name(title) + "." + lang

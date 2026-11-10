@@ -156,3 +156,20 @@ def translate_segments(segments: list[Segment], src_iso: str, target_label: str,
     if target_label == SERBIAN_LATIN:
         out = [cyr_to_lat(t) for t in out]
     return [Segment(s.start, s.end, t) for s, t in zip(segments, out)]
+
+
+LOCAL_ENGINE = "Local (NLLB, offline)"
+GEMINI_ENGINE = "Gemini (online, better context)"
+ENGINES = [LOCAL_ENGINE, GEMINI_ENGINE]
+
+
+def translate(segments: list[Segment], src_iso: str, target_label: str, engine: str = LOCAL_ENGINE,
+              api_key: str = "", cb: Callable[[float], None] | None = None,
+              log: Callable[[str], None] | None = None, model: str | None = None) -> list[Segment]:
+    """Translate with the chosen engine; Gemini falls back to local NLLB per failed chunk."""
+    if engine != GEMINI_ENGINE or TARGETS.get(target_label) is None or not segments:
+        return translate_segments(segments, src_iso, target_label, cb, log)
+    from app import gemini
+    return gemini.translate_segments(
+        segments, target_label, api_key, cb, log, model=model,
+        fallback=lambda chunk: translate_segments(chunk, src_iso, target_label, None, log))

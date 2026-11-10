@@ -1,7 +1,7 @@
 ---
 id: TASK-008
 title: Add optional Gemini API translation with Settings screen and connect guidance
-status: ready
+status: done
 agent: implementer
 skills: []
 model_tier: coding
@@ -43,7 +43,7 @@ acceptance:
 max_retries: 2
 attempts: 0
 created: 2026-11-09
-updated: 2026-11-09
+updated: 2026-11-10
 ---
 
 ## Objective

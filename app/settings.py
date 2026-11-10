@@ -13,6 +13,8 @@ DEFAULTS = {
     "subtitles": False,
     "sub_target": "Original (no translation)",
     "sub_video": "SRT file only",
+    "gemini_api_key": "",
+    "translator": "Local (NLLB, offline)",
 }
 
 
@@ -38,6 +40,11 @@ def load(path: Path | None = None) -> dict:
     for key, sub in DIR_SUBFOLDERS.items():
         data.setdefault(key, str(base / sub))
     return data
+
+
+def get_gemini_key(cfg: dict) -> str:
+    """Gemini API key: the GEMINI_API_KEY environment variable wins over the saved key."""
+    return (os.environ.get("GEMINI_API_KEY") or cfg.get("gemini_api_key") or "").strip()
 
 
 def save(data: dict, path: Path | None = None) -> None:
