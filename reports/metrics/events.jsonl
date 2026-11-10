@@ -186,3 +186,7 @@
 {"ts":"2026-11-10T17:36:29.017Z","type":"subagent_stop","agent":"security-reviewer","has_handoff":false,"retry":false}
 {"ts":"2026-11-10T17:52:01.190Z","type":"review_saved","task":"TASK-016","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":1,"low":1,"info":1}}
 {"ts":"2026-11-10T17:52:13.241Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T20:35:22.419Z","type":"subagent_stop","agent":"security-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T20:38:51.453Z","type":"review_rejected","task":"TASK-016","kind":"security","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T20:39:42.529Z","type":"review_saved","task":"TASK-016","kind":"security","reviewer":"security-reviewer","verdict":"approve","findings":{"critical":0,"high":0,"medium":0,"low":0,"info":2}}
+{"ts":"2026-11-10T20:39:42.702Z","type":"transition","task":"TASK-016","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
