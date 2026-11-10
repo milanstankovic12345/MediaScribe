@@ -26,6 +26,8 @@ class TranscribeScreen(Screen):
     def __init__(self, master, cfg):
         self.local_file: Path | None = None
         super().__init__(master, cfg)
+        self.url.bind("<KeyRelease>", self._on_url_change)
+        self.url.bind("<<Paste>>", lambda _e: self.after_idle(self._on_url_change))
 
     def _build_options(self, parent):
         parent.columnconfigure(0, weight=1)
@@ -113,6 +115,16 @@ class TranscribeScreen(Screen):
         if p:
             self.local_file = Path(p)
             self.file_lbl.configure(text=f"Local file: {self.local_file.name}")
+            self.url.delete(0, "end")
+
+    def _source_file(self, url):
+        """The most recently entered source wins: a non-empty URL overrides a picked file."""
+        return None if url else self.local_file
+
+    def _on_url_change(self, _event=None):
+        if self.url.get().strip() and self.local_file:
+            self.local_file = None
+            self.file_lbl.configure(text=NO_FILE_TEXT)
 
     def _clear_file(self):
         self.url.delete(0, "end")
@@ -120,13 +132,14 @@ class TranscribeScreen(Screen):
         self.file_lbl.configure(text=NO_FILE_TEXT)
 
     def _validate(self, url):
-        if not url and not self.local_file:
+        local = self._source_file(url)
+        if not url and not local:
             return "Paste a URL or choose a local file."
         subs = self.sub_var.get()
         if not (self.md_var.get() or self.pdf_var.get() or subs):
             return "Tick Markdown, PDF and/or Subtitles."
-        if (subs and self.sub_video.get() != SRT_ONLY and self.local_file
-                and self.local_file.suffix.lower() not in VIDEO_EXTS):
+        if (subs and self.sub_video.get() != SRT_ONLY and local
+                and local.suffix.lower() not in VIDEO_EXTS):
             return "Embed/Burn needs a video file or a URL."
         engine = getattr(self, "engine", None)
         if (subs and engine is not None and engine.get() == translator.GEMINI_ENGINE
@@ -136,7 +149,8 @@ class TranscribeScreen(Screen):
         return None
 
     def _args(self):
-        return (self.model.get(), self.md_var.get(), self.pdf_var.get(), self.local_file,
+        return (self.model.get(), self.md_var.get(), self.pdf_var.get(),
+                self._source_file(self.url.get().strip()),
                 LANGUAGES[self.language.get()], self.sub_var.get(), self.sub_target.get(),
                 self.sub_video.get(), self.engine.get(), settings.get_gemini_key(self.cfg),
                 self.cfg.get("gemini_model") or None)

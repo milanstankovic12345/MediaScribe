@@ -55,3 +55,8 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-10 TASK-016 review r1: code approve_with_notes saved (CR-1 medium order-dependent SEC-2 test, CR-2 low import placement, CR-3 info unprotect/_run exception chain); security approve (SEC-1..3 info) NOT saved - read-only guard blocked save; gate BLOCKED awaiting security review file; needs human
 - 2026-11-10 TASK-016 security review r1 re-dispatch (opus) - previous save blocked; base=34d954d (work committed in 15735dc)
 - 2026-11-10 TASK-016 done (gate PASS r1; code approve_with_notes CR-1 medium order-dependent SEC-2 test, CR-2 low, CR-3 info; security approve SEC-1 info test-order gap, SEC-2 info failed Disconnect leaves enc key on disk (pre-existing); security review saved by orchestrator on user instruction after read-only guard blocked reviewer save)
+- 2026-11-10 TASK-017 → implementer (sonnet) base=de306bb
+- 2026-11-10 TASK-017 blocked r0: test_gemini.py stub needs _source_file (out of scope); awaiting scope decision
+- 2026-11-10 TASK-017 scope widened to tests/test_gemini.py (user); re-dispatch implementer
+- 2026-11-10 TASK-017 handoff OK (181 passed) → code review r1
+- 2026-11-10 TASK-017 done (gate PASS r1; code approve_with_notes: CR-1 low untested URL bindings, CR-2 low cancelled-dialog test incomplete, CR-3/CR-4 info; tests/ gitignored)

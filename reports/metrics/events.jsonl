@@ -190,3 +190,20 @@
 {"ts":"2026-11-10T20:38:51.453Z","type":"review_rejected","task":"TASK-016","kind":"security","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
 {"ts":"2026-11-10T20:39:42.529Z","type":"review_saved","task":"TASK-016","kind":"security","reviewer":"security-reviewer","verdict":"approve","findings":{"critical":0,"high":0,"medium":0,"low":0,"info":2}}
 {"ts":"2026-11-10T20:39:42.702Z","type":"transition","task":"TASK-016","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T20:50:10.372Z","type":"task_created","task":"TASK-017","agent":"implementer"}
+{"ts":"2026-11-10T20:50:30.528Z","type":"transition","task":"TASK-017","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T20:51:16.745Z","type":"transition","task":"TASK-017","from":"ready","to":"in_progress","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T20:52:18.668Z","type":"handoff_rejected","task":"TASK-017","errors":["unparseable frontmatter: Plain scalar contains \": \" — quote the value: tests/test_gemini.py::test_validate_blocks_gemini_ (line 18)"]}
+{"ts":"2026-11-10T20:53:28.137Z","type":"handoff_saved","task":"TASK-017","status":"blocked","agent":"implementer"}
+{"ts":"2026-11-10T20:53:35.359Z","type":"subagent_stop","agent":"implementer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T20:53:41.764Z","type":"transition","task":"TASK-017","from":"in_progress","to":"blocked","agent":"implementer","attempts":0,"reason":"tests/test_gemini.py::test_validate_blocks_gemini_without_key stub lacks _source_file; file outside files_allowed"}
+{"ts":"2026-11-10T20:54:30.223Z","type":"transition_rejected","task":"TASK-017","from":"blocked","to":"in_progress","errors":["illegal transition blocked -> in_progress (allowed: ready, cancelled)"]}
+{"ts":"2026-11-10T20:54:30.322Z","type":"transition","task":"TASK-017","from":"blocked","to":"ready","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-10T20:54:30.391Z","type":"transition","task":"TASK-017","from":"ready","to":"in_progress","agent":"implementer","attempts":1,"reason":null}
+{"ts":"2026-11-10T20:54:43.839Z","type":"handoff_saved","task":"TASK-017","status":"done","agent":"implementer"}
+{"ts":"2026-11-10T20:54:46.770Z","type":"subagent_stop","agent":"implementer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T20:54:50.280Z","type":"transition","task":"TASK-017","from":"in_progress","to":"review","agent":"implementer","attempts":1,"reason":null}
+{"ts":"2026-11-10T20:56:28.406Z","type":"review_rejected","task":"TASK-017","kind":"code","errors":["schema $.findings[1].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-10T20:56:49.804Z","type":"review_saved","task":"TASK-017","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":2,"info":2}}
+{"ts":"2026-11-10T20:56:58.212Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-10T20:57:01.638Z","type":"transition","task":"TASK-017","from":"review","to":"done","agent":"implementer","attempts":1,"reason":null}
