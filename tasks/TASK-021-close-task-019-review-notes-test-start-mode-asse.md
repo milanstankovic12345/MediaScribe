@@ -1,7 +1,7 @@
 ---
 id: TASK-021
 title: "Close TASK-019 review notes: test _start_mode, assert full _args tuple, use button_text"
-status: ready
+status: done
 agent: implementer
 skills: []
 model_tier: fast
@@ -25,7 +25,7 @@ acceptance:
 max_retries: 2
 attempts: 0
 created: 2026-11-10
-updated: 2026-11-10
+updated: 2026-11-11
 ---
 
 ## Objective

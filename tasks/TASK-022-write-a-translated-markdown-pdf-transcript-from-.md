@@ -1,7 +1,7 @@
 ---
 id: TASK-022
 title: Write a translated Markdown/PDF transcript from the Translate / Subtitles action
-status: draft
+status: done
 agent: implementer
 skills: []
 model_tier: coding
@@ -27,7 +27,7 @@ acceptance:
 max_retries: 2
 attempts: 0
 created: 2026-11-10
-updated: 2026-11-10
+updated: 2026-11-11
 ---
 
 ## Objective

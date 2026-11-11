@@ -249,3 +249,24 @@
 {"ts":"2026-11-10T21:59:01.784Z","type":"review_saved","task":"TASK-020","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":1,"low":2,"info":1}}
 {"ts":"2026-11-10T21:59:10.419Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
 {"ts":"2026-11-10T21:59:18.952Z","type":"transition","task":"TASK-020","from":"review","to":"done","agent":"docs-writer","attempts":0,"reason":null}
+{"ts":"2026-11-11T18:16:05.248Z","type":"transition","task":"TASK-021","from":"ready","to":"in_progress","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-11T18:17:18.786Z","type":"handoff_rejected","task":"TASK-021","errors":["unparseable frontmatter: Unexpected indentation in sequence (line 26)"]}
+{"ts":"2026-11-11T18:17:26.764Z","type":"handoff_rejected","task":"TASK-021","errors":["validation command not run: \".venv/Scripts/python -c \"import pathlib,sys; s=pathlib.Path('app/screens/transcribe.py').read_text(encoding='utf-8'); sys.exit(int('text=self.button_text' not in s))\"\""]}
+{"ts":"2026-11-11T18:17:34.482Z","type":"handoff_saved","task":"TASK-021","status":"done","agent":"implementer"}
+{"ts":"2026-11-11T18:17:43.655Z","type":"subagent_stop","agent":"implementer","has_handoff":false,"retry":false}
+{"ts":"2026-11-11T18:17:47.168Z","type":"transition","task":"TASK-021","from":"in_progress","to":"review","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-11T18:19:14.684Z","type":"review_rejected","task":"TASK-021","kind":"code","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-11T18:19:29.726Z","type":"review_saved","task":"TASK-021","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":1,"info":0}}
+{"ts":"2026-11-11T18:19:38.574Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-11T18:19:41.679Z","type":"transition","task":"TASK-021","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-11T18:27:59.739Z","type":"transition","task":"TASK-022","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":"open questions answered: user accepted all recommended answers"}
+{"ts":"2026-11-11T18:27:59.837Z","type":"transition","task":"TASK-023","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":"open questions answered: user accepted all recommended answers"}
+{"ts":"2026-11-11T18:27:59.927Z","type":"transition","task":"TASK-024","from":"draft","to":"ready","agent":"implementer","attempts":0,"reason":"open questions answered: user accepted all recommended answers"}
+{"ts":"2026-11-11T18:34:55.316Z","type":"transition","task":"TASK-022","from":"ready","to":"in_progress","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-11T18:37:06.008Z","type":"handoff_saved","task":"TASK-022","status":"done","agent":"implementer"}
+{"ts":"2026-11-11T18:37:08.996Z","type":"subagent_stop","agent":"implementer","has_handoff":false,"retry":false}
+{"ts":"2026-11-11T18:37:13.045Z","type":"transition","task":"TASK-022","from":"in_progress","to":"review","agent":"implementer","attempts":0,"reason":null}
+{"ts":"2026-11-11T18:39:08.194Z","type":"review_rejected","task":"TASK-022","kind":"code","errors":["schema $.findings[0].acceptance_ref: must match /^RA-[0-9]{3,}$/"]}
+{"ts":"2026-11-11T18:39:28.709Z","type":"review_saved","task":"TASK-022","kind":"code","reviewer":"code-reviewer","verdict":"approve_with_notes","findings":{"critical":0,"high":0,"medium":0,"low":1,"info":2}}
+{"ts":"2026-11-11T18:39:37.685Z","type":"subagent_stop","agent":"code-reviewer","has_handoff":false,"retry":false}
+{"ts":"2026-11-11T18:39:42.384Z","type":"transition","task":"TASK-022","from":"review","to":"done","agent":"implementer","attempts":0,"reason":null}

@@ -7,7 +7,7 @@ import customtkinter as ctk
 
 from app import audio_prep, downloader, exporter, gemini, settings, subtitles, translator
 from app.screens.base import Screen
-from app.transcriber import LANGUAGES, MODELS, transcribe
+from app.transcriber import LANGUAGES, MODELS, Transcript, transcribe
 
 MEDIA_TYPES = [("Audio/Video", "*.mp3 *.m4a *.wav *.flac *.ogg *.opus *.mp4 *.mkv *.webm *.mov *.avi"),
                ("All files", "*.*")]
@@ -68,6 +68,9 @@ class TranscribeScreen(Screen):
         self.sub_video = ctk.CTkOptionMenu(sub_row, values=SUB_VIDEO_MODES, width=180)
         self.sub_video.set(self.cfg["sub_video"] if self.cfg["sub_video"] in SUB_VIDEO_MODES else SRT_ONLY)
         self.sub_video.pack(side="left", padx=8)
+        self.sub_doc_var = ctk.BooleanVar(value=self.cfg["sub_doc"])
+        ctk.CTkCheckBox(sub_row, text="Translated document", variable=self.sub_doc_var,
+                        width=20).pack(side="left", padx=8)
 
         eng_row = ctk.CTkFrame(parent, fg_color="transparent")
         eng_row.grid(row=3, column=0, pady=(8, 0), sticky="ew")
@@ -89,7 +92,7 @@ class TranscribeScreen(Screen):
 
     def _build_actions(self, parent):
         parent.columnconfigure((0, 1), weight=1, uniform="actions")
-        self.button = ctk.CTkButton(parent, text="Transcribe", height=40,
+        self.button = ctk.CTkButton(parent, text=self.button_text, height=40,
                                     command=lambda: self._start_mode(MODE_TRANSCRIBE))
         self.button.grid(row=0, column=0, sticky="ew", padx=(0, 4))
         self.subs_button = ctk.CTkButton(parent, text="Translate / Subtitles", height=40,
@@ -154,21 +157,27 @@ class TranscribeScreen(Screen):
                 and self.sub_target.get() != translator.ORIGINAL
                 and not settings.get_gemini_key(self.cfg)):
             return GEMINI_HINT
+        if not (self.md_var.get() or self.pdf_var.get()) and self.sub_doc_var.get():
+            return "Tick Markdown and/or PDF for the translated document."
         return None
 
     def _args(self):
         subs = self.mode == MODE_SUBTITLES
+        sub_doc = ()
+        if subs and self.sub_doc_var.get():
+            sub_doc = tuple(ext for ext, on in ((".md", self.md_var.get()), (".pdf", self.pdf_var.get())) if on)
         return (self.model.get(), self.md_var.get() and not subs, self.pdf_var.get() and not subs,
                 self._source_file(self.url.get().strip()),
                 LANGUAGES[self.language.get()], subs, self.sub_target.get(),
                 self.sub_video.get(), self.engine.get(), settings.get_gemini_key(self.cfg),
-                self.cfg.get("gemini_model") or None)
+                self.cfg.get("gemini_model") or None, sub_doc)
 
     def collect_cfg(self):
         return {**super().collect_cfg(), "model": self.model.get(), "language": self.language.get(),
                 "markdown": self.md_var.get(), "pdf": self.pdf_var.get(),
                 "sub_target": self.sub_target.get(),
-                "sub_video": self.sub_video.get(), "translator": self.engine.get()}
+                "sub_video": self.sub_video.get(), "sub_doc": self.sub_doc_var.get(),
+                "translator": self.engine.get()}
 
     @staticmethod
     def _lang_code(target, detected):
@@ -184,7 +193,7 @@ class TranscribeScreen(Screen):
 
     def _run(self, url, out, model, md, pdf, local_file, language, subs=False,
              target=translator.ORIGINAL, sub_video=SRT_ONLY, engine=translator.LOCAL_ENGINE,
-             api_key="", gemini_model=None):
+             api_key="", gemini_model=None, sub_doc=()):
         saved = []
         with tempfile.TemporaryDirectory(prefix="yt-tool-") as tmp:
             tmp = Path(tmp)
@@ -223,6 +232,15 @@ class TranscribeScreen(Screen):
                 self._prog(0.85)
                 lang = self._lang_code(target, t.language)
                 stem = downloader.safe_name(title) + "." + lang
+                if sub_doc:
+                    tt = Transcript(segs, lang)
+                    src_lang = t.language if target != translator.ORIGINAL else None
+                    if ".md" in sub_doc:
+                        saved.append(exporter.write_markdown(tt, title, source, out / (stem + ".md"),
+                                                             translated_from=src_lang))
+                    if ".pdf" in sub_doc:
+                        saved.append(exporter.write_pdf(tt, title, source, out / (stem + ".pdf"),
+                                                        translated_from=src_lang))
                 srt = subtitles.write_srt(subtitles.to_cues(segs), out / (stem + ".srt"))
                 saved.append(srt)
                 if sub_video == EMBED:

@@ -68,3 +68,10 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-10 TASK-019 done (gate PASS r1; code approve_with_notes: CR-1 low _start_mode untested, CR-2 low _args test checks only md/pdf/subs, CR-3 low unused button_text, CR-4 info Gemini hint in transcribe mode; layout not visually verified; Q2/Q3 follow-up tasks requested by user)
 - 2026-11-10 TASK-020 draft→ready (deps done) → docs-writer base=1668a3f
 - 2026-11-10 TASK-020 done (gate PASS r1; code approve_with_notes: CR-1 medium blueprint.md:35 stale 'subtitles, if ticked' (AC3 leftover), CR-2 low blueprint.md:39 missing-folder opens parent, CR-3 low CLAUDE.md:21 OK button still shown, CR-4 info CLAUDE.md:23/40 not updated; leftover reports/handoffs/TASK-020.md.rejected)
+- 2026-11-11 TASK-021 → implementer (haiku) base=de8a82e
+- 2026-11-11 TASK-021 handoff OK (198 passed) → code review r1
+- 2026-11-11 TASK-021 done (gate PASS r1; code approve_with_notes: CR-1 low test_args_modes md/pdf both True so swap undetected; button label not visually checked; leftover reports/handoffs/TASK-021.md.rejected)
+- 2026-11-11 TASK-022 Q2a-Q2e, TASK-023 Q3a-Q3e, TASK-024 Q3f-Q3j answered (user: accept all recommended) → ready
+- 2026-11-11 TASK-022 → implementer base=de8a82e (working tree carries uncommitted TASK-021 change in app/screens/transcribe.py)
+- 2026-11-11 TASK-022 handoff OK (205 passed) → code review r1
+- 2026-11-11 TASK-022 done (gate PASS r1; code approve_with_notes: CR-1 low no test for md/pdf/srt/video order + single translate + sub_doc save, CR-2 info same-lang Gemini still shows 'Translated from', CR-3 info handoff risk on Q2 answers is stale; checkbox layout not visually verified)

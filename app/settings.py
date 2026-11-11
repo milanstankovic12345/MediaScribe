@@ -15,6 +15,7 @@ DEFAULTS = {
     "subtitles": False,
     "sub_target": "Original (no translation)",
     "sub_video": "SRT file only",
+    "sub_doc": False,
     "gemini_api_key": "",
     "translator": "Local (NLLB, offline)",
 }
