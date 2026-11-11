@@ -1,11 +1,12 @@
 import json
 import os
+import shutil
 from pathlib import Path
 
 from app import secret_store
 
 DEFAULTS = {
-    "output_dir": str(Path.home() / "Downloads" / "yt-tool"),
+    "output_dir": str(Path.home() / "Downloads" / "MediaScribe"),
     "model": "small",
     "markdown": True,
     "pdf": True,
@@ -25,15 +26,36 @@ DEFAULTS = {
 DIR_SUBFOLDERS = {"audio_dir": "audio", "video_dir": "video", "transcribe_dir": "transcripts"}
 
 
+APP_DIR = "MediaScribe"
+LEGACY_APP_DIR = "yt-tool"  # config folder name before the rename to MediaScribe
+
+
+def _appdata() -> Path:
+    return Path(os.environ.get("APPDATA") or str(Path.home()))
+
+
 def config_path() -> Path:
     """Location of the JSON config file in %APPDATA%."""
-    base = os.environ.get("APPDATA") or str(Path.home())
-    return Path(base) / "yt-tool" / "config.json"
+    return _appdata() / APP_DIR / "config.json"
+
+
+def _migrate_legacy(path: Path) -> None:
+    """Copy the pre-rename yt-tool config to the new location once, if only the old one exists."""
+    old = _appdata() / LEGACY_APP_DIR / "config.json"
+    if path.exists() or not old.is_file():
+        return
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(old, path)
+    except OSError:
+        pass
 
 
 def load(path: Path | None = None) -> dict:
     """Load settings, filling in defaults for missing or unreadable values."""
-    path = path or config_path()
+    if path is None:
+        path = config_path()
+        _migrate_legacy(path)
     data = dict(DEFAULTS)
     try:
         data.update(json.loads(path.read_text(encoding="utf-8")))

@@ -17,7 +17,7 @@ class App(ctk.CTk):
 
     def __init__(self):
         super().__init__()
-        self.title("YouTube Downloader & Transcriber")
+        self.title("MediaScribe")
         self.geometry("880x620")
         ctk.set_appearance_mode("system")
         self.cfg = settings.load()

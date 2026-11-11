@@ -214,7 +214,7 @@ class TranscribeScreen(Screen):
              target=translator.ORIGINAL, sub_video=SRT_ONLY, engine=translator.LOCAL_ENGINE,
              api_key="", gemini_model=None, sub_doc=()):
         saved = []
-        with tempfile.TemporaryDirectory(prefix="yt-tool-") as tmp:
+        with tempfile.TemporaryDirectory(prefix="mediascribe-") as tmp:
             tmp = Path(tmp)
             want_video = subs and sub_video != SRT_ONLY
             video_src = None

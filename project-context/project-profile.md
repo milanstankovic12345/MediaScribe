@@ -5,7 +5,7 @@ generated: 2026-10-29
 generator: project-kickstarter bootstrap 0.2.0
 ---
 
-# Project profile — youtube-downloader
+# Project profile — MediaScribe
 
 <!-- project-kickstarter:profile:start -->
 ## Summary (generated — do not edit inside the markers)

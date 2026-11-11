@@ -1,7 +1,7 @@
-# YouTube Downloader & Transcriber
+# MediaScribe
 
 A Windows desktop app (CustomTkinter) to download audio (MP3), download video (MP4),
-and transcribe videos to Markdown or PDF using [faster-whisper](https://github.com/SYSTRAN/faster-whisper).
+transcribe videos to Markdown or PDF, and translate them into subtitles, using [faster-whisper](https://github.com/SYSTRAN/faster-whisper).
 Playlists are supported.
 
 ## Requirements
@@ -11,8 +11,8 @@ Playlists are supported.
 
 ## Get it on another PC
 ```
-git clone https://github.com/milanstankovic12345/yt-downloader.git
-cd yt-downloader
+git clone https://github.com/milanstankovic12345/MediaScribe.git
+cd MediaScribe
 ```
 No git? Use **Code -> Download ZIP** on the GitHub page and unzip it. Install Python 3.10+ and ffmpeg first.
 
