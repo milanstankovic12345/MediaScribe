@@ -1,7 +1,7 @@
 ---
 id: TASK-023
 title: Add a transcript import module that parses SRT and app Markdown into a Transcript
-status: ready
+status: done
 agent: implementer
 skills: []
 model_tier: coding

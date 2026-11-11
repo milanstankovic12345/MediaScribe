@@ -75,3 +75,6 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-11 TASK-022 → implementer base=de8a82e (working tree carries uncommitted TASK-021 change in app/screens/transcribe.py)
 - 2026-11-11 TASK-022 handoff OK (205 passed) → code review r1
 - 2026-11-11 TASK-022 done (gate PASS r1; code approve_with_notes: CR-1 low no test for md/pdf/srt/video order + single translate + sub_doc save, CR-2 info same-lang Gemini still shows 'Translated from', CR-3 info handoff risk on Q2 answers is stale; checkbox layout not visually verified)
+- 2026-11-11 TASK-023 → implementer base=103af89
+- 2026-11-11 TASK-023 handoff OK (225 passed) → code + security review r1
+- 2026-11-11 TASK-023 done (gate PASS r1; code approve_with_notes: CR-1 medium header lang sr-Latn/und unmapped, CR-2 low SRT timing w/ coords dropped, CR-3 low non-raw {\an8} in test, CR-4/5 info; security approve_with_notes: SEC-1 medium header lang unvalidated -> path traversal in output name once TASK-024 wires it, SEC-2 medium quadratic MD continuation join, SEC-3 low stat/read TOCTOU, SEC-4 info raw OSError; files untracked, tests/ gitignored)
