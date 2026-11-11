@@ -78,3 +78,9 @@ Append-only. One line per orchestration event. Survives context compaction.
 - 2026-11-11 TASK-023 → implementer base=103af89
 - 2026-11-11 TASK-023 handoff OK (225 passed) → code + security review r1
 - 2026-11-11 TASK-023 done (gate PASS r1; code approve_with_notes: CR-1 medium header lang sr-Latn/und unmapped, CR-2 low SRT timing w/ coords dropped, CR-3 low non-raw {\an8} in test, CR-4/5 info; security approve_with_notes: SEC-1 medium header lang unvalidated -> path traversal in output name once TASK-024 wires it, SEC-2 medium quadratic MD continuation join, SEC-3 low stat/read TOCTOU, SEC-4 info raw OSError; files untracked, tests/ gitignored)
+- 2026-11-11 TASK-024 → implementer base=6553031
+- 2026-11-11 TASK-024 handoff OK (243 passed) → code review r1
+- 2026-11-11 TASK-024 done (gate PASS r1; code approve_with_notes: CR-1 low overwrite guard after translation wastes NLLB/Gemini work, CR-2 low no test for .md / upper-case .SRT collision, CR-3/4 info; SEC-1/CR-1 from TASK-023 handled at wiring via _clean_lang; file dialog filter not visually verified; CLAUDE.md/blueprint not yet updated -> TASK-025)
+- 2026-11-11 TASK-025 → docs-writer (haiku) base=6553031 (docs/ gitignored; pre-edit snapshot in scratchpad TASK-025-base)
+- 2026-11-11 TASK-025 handoff OK (243 passed, done_with_concerns) → code review r1
+- 2026-11-11 TASK-025 done (gate PASS r1; code approve_with_notes: CR-1 low blueprint says 'UTF-8 with BOM' but BOM optional, CR-2 info no 'Translated from' also when source lang unknown, CR-3 info Tests list omits test_done_dialog.py; open code follow-ups from TASK-024: CR-1 overwrite guard after translation, CR-3 unlisted langs -> und)

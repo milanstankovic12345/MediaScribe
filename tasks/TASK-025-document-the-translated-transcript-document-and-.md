@@ -1,7 +1,7 @@
 ---
 id: TASK-025
 title: Document the translated transcript document and the transcript import path
-status: draft
+status: done
 agent: docs-writer
 skills: []
 model_tier: fast
@@ -24,7 +24,7 @@ acceptance:
 max_retries: 2
 attempts: 0
 created: 2026-11-10
-updated: 2026-11-10
+updated: 2026-11-11
 ---
 
 ## Objective

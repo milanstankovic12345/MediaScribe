@@ -1,7 +1,7 @@
 ---
 id: TASK-024
 title: Let Translate / Subtitles start from an existing SRT or Markdown transcript instead of Whisper
-status: ready
+status: done
 agent: implementer
 skills: []
 model_tier: coding

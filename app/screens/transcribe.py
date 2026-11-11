@@ -5,11 +5,13 @@ from tkinter import filedialog
 
 import customtkinter as ctk
 
-from app import audio_prep, downloader, exporter, gemini, settings, subtitles, translator
+from app import (audio_prep, downloader, exporter, gemini, settings, subtitles, transcript_import,
+                 translator)
 from app.screens.base import Screen
 from app.transcriber import LANGUAGES, MODELS, Transcript, transcribe
 
 MEDIA_TYPES = [("Audio/Video", "*.mp3 *.m4a *.wav *.flac *.ogg *.opus *.mp4 *.mkv *.webm *.mov *.avi"),
+               ("Transcript", "*.srt *.md"),
                ("All files", "*.*")]
 VIDEO_EXTS = {".mp4", ".mkv", ".webm", ".mov", ".avi"}
 SRT_ONLY, EMBED, BURN = "SRT file only", "Embed into video (fast)", "Burn into video (slow)"
@@ -17,6 +19,21 @@ SUB_VIDEO_MODES = [SRT_ONLY, EMBED, BURN]
 GEMINI_HINT = "Gemini is not connected. Get a free API key, then paste it in Settings."
 NO_FILE_TEXT = "Or use a local file: (none)"
 MODE_TRANSCRIBE, MODE_SUBTITLES = "transcribe", "subtitles"
+TRANSCRIPT_ONLY_MSG = "A transcript file works only with Translate / Subtitles."
+UNKNOWN_LANG_MSG = "The transcript language is unknown. Choose it in the Language menu."
+OVERWRITE_MSG = "The output would overwrite the input file. Choose another target language or output folder."
+# Language codes accepted from an imported file; anything else is treated as unknown so it can
+# never reach an output file name.
+_SAFE_LANGS = ({v for v in LANGUAGES.values() if v} | set(translator.WHISPER_TO_NLLB))
+
+
+def _is_transcript(path) -> bool:
+    return bool(path) and Path(path).suffix.lower() in transcript_import.TRANSCRIPT_EXTS
+
+
+def _clean_lang(code) -> str:
+    code = "sr" if code == "sr-Latn" else code
+    return code if code in _SAFE_LANGS else ""
 
 
 class TranscribeScreen(Screen):
@@ -147,6 +164,8 @@ class TranscribeScreen(Screen):
         if not url and not local:
             return "Paste a URL or choose a local file."
         if self.mode == MODE_TRANSCRIBE:
+            if _is_transcript(local):
+                return TRANSCRIPT_ONLY_MSG
             if not (self.md_var.get() or self.pdf_var.get()):
                 return "Tick Markdown and/or PDF."
             return None
@@ -199,25 +218,38 @@ class TranscribeScreen(Screen):
             tmp = Path(tmp)
             want_video = subs and sub_video != SRT_ONLY
             video_src = None
-            if local_file:
-                src, title, source = local_file, local_file.stem, str(local_file)
-                video_src = local_file
-            elif want_video:
-                self._say("Downloading video for subtitles...")
-                src, title = downloader.download_video(url, tmp, lambda v: self._prog(v * 0.1))
-                source, video_src = url, src
+            is_tr = _is_transcript(local_file)
+            if is_tr:
+                if not subs:
+                    raise ValueError(TRANSCRIPT_ONLY_MSG)
+                t, title = transcript_import.load(local_file)
+                lang_in = language if language is not None else _clean_lang(t.language)
+                if not lang_in and target != translator.ORIGINAL and engine != translator.GEMINI_ENGINE:
+                    raise ValueError(UNKNOWN_LANG_MSG)
+                t = Transcript(t.segments, lang_in)
+                source = str(local_file)
+                self._prog(0.6)
             else:
-                self._say("Downloading audio for transcription...")
-                src, title = downloader.download_audio_raw(url, tmp, lambda v: self._prog(v * 0.1))
-                source = url
-            self._say("Preparing audio...")
-            media = audio_prep.prepare(src, tmp, self._say)
-            self._say("Transcribing...")
-            t = transcribe(media, model, lambda v: self._prog(0.1 + v * 0.5), self._say, language)
+                if local_file:
+                    src, title, source = local_file, local_file.stem, str(local_file)
+                    video_src = local_file
+                elif want_video:
+                    self._say("Downloading video for subtitles...")
+                    src, title = downloader.download_video(url, tmp, lambda v: self._prog(v * 0.1))
+                    source, video_src = url, src
+                else:
+                    self._say("Downloading audio for transcription...")
+                    src, title = downloader.download_audio_raw(url, tmp, lambda v: self._prog(v * 0.1))
+                    source = url
+                self._say("Preparing audio...")
+                media = audio_prep.prepare(src, tmp, self._say)
+                self._say("Transcribing...")
+                t = transcribe(media, model, lambda v: self._prog(0.1 + v * 0.5), self._say, language)
+
             base = out / downloader.safe_name(title)
-            if md:
+            if md and not is_tr:
                 saved.append(exporter.write_markdown(t, title, source, base.with_suffix(".md")))
-            if pdf:
+            if pdf and not is_tr:
                 saved.append(exporter.write_pdf(t, title, source, base.with_suffix(".pdf")))
             if subs:
                 segs = t.segments
@@ -232,6 +264,10 @@ class TranscribeScreen(Screen):
                 self._prog(0.85)
                 lang = self._lang_code(target, t.language)
                 stem = downloader.safe_name(title) + "." + lang
+                if is_tr:
+                    names = [stem + ".srt"] + [stem + e for e in sub_doc]
+                    if any((out / n).resolve() == Path(local_file).resolve() for n in names):
+                        raise RuntimeError(OVERWRITE_MSG)
                 if sub_doc:
                     tt = Transcript(segs, lang)
                     src_lang = t.language if target != translator.ORIGINAL else None
